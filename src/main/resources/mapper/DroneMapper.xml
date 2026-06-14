@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.md.basePlatform.repository.DroneMapper">
+
+    <resultMap id="DroneResultMap" type="com.md.basePlatform.domain.Drone">
+        <id property="id" column="id"/>
+        <result property="model" column="model"/>
+        <result property="manufacturer" column="manufacturer"/>
+        <result property="maxFlightTime" column="max_flight_time"/>
+        <result property="maxRange" column="max_range"/>
+        <result property="weight" column="weight"/>
+        <result property="payloadCapacity" column="payload_capacity"/>
+        <result property="createdAt" column="created_at"
+                typeHandler="com.md.basePlatform.config.mybatis.SqliteLocalDateTimeTypeHandler"/>
+        <result property="updatedAt" column="updated_at"
+                typeHandler="com.md.basePlatform.config.mybatis.SqliteLocalDateTimeTypeHandler"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.md.basePlatform.domain.Drone" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_drone (model, manufacturer, max_flight_time, max_range, weight, payload_capacity,
+                             created_at, updated_at)
+        VALUES (#{model}, #{manufacturer}, #{maxFlightTime}, #{maxRange}, #{weight}, #{payloadCapacity},
+                #{createdAt, typeHandler=com.md.basePlatform.config.mybatis.SqliteLocalDateTimeTypeHandler},
+                #{updatedAt, typeHandler=com.md.basePlatform.config.mybatis.SqliteLocalDateTimeTypeHandler})
+    </insert>
+
+    <select id="selectById" resultMap="DroneResultMap">
+        SELECT id, model, manufacturer, max_flight_time, max_range, weight, payload_capacity,
+               created_at, updated_at
+        FROM t_drone
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectPage" resultMap="DroneResultMap">
+        SELECT id, model, manufacturer, max_flight_time, max_range, weight, payload_capacity,
+               created_at, updated_at
+        FROM t_drone
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (model LIKE '%' || #{keyword} || '%' OR manufacturer LIKE '%' || #{keyword} || '%')
+            </if>
+        </where>
+        ORDER BY id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="selectAll" resultMap="DroneResultMap">
+        SELECT id, model, manufacturer, max_flight_time, max_range, weight, payload_capacity,
+               created_at, updated_at
+        FROM t_drone
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (model LIKE '%' || #{keyword} || '%' OR manufacturer LIKE '%' || #{keyword} || '%')
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="countByKeyword" resultType="long">
+        SELECT COUNT(1)
+        FROM t_drone
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (model LIKE '%' || #{keyword} || '%' OR manufacturer LIKE '%' || #{keyword} || '%')
+            </if>
+        </where>
+    </select>
+
+    <update id="updateById" parameterType="com.md.basePlatform.domain.Drone">
+        UPDATE t_drone
+        SET model = #{model},
+            manufacturer = #{manufacturer},
+            max_flight_time = #{maxFlightTime},
+            max_range = #{maxRange},
+            weight = #{weight},
+            payload_capacity = #{payloadCapacity},
+            updated_at = #{updatedAt, typeHandler=com.md.basePlatform.config.mybatis.SqliteLocalDateTimeTypeHandler}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM t_drone WHERE id = #{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:./data/drone.db
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialization-mode: always
+    schema: classpath:schema.sql
+
+druid:
+  initial-size: 1
+  min-idle: 1
+  max-active: 5
